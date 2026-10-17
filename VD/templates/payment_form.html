@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment to Content Provider</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons (optional for icons) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+        .payment-card {
+            max-width: 600px;
+            margin: 50px auto;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card payment-card shadow-lg border-0">
+        <div class="card-body p-5">
+            <h2 class="text-center text-primary fw-bold mb-4">
+                💳 Process Payment to Content Provider
+            </h2>
+
+            <!-- Article & Author Info -->
+            <div class="mb-4 p-3 bg-light rounded border">
+                <p class="mb-1"><strong>Content Title:</strong> {{ article.location }}</p>
+                <p class="mb-1"><strong>Author:</strong> {{ recipient.name }}</p>
+                <p class="mb-1"><strong>Published On:</strong> {{ article.curr_date|date:"F j, Y" }}</p>
+                <p class="mb-0"><strong>View Count:</strong> {{ article.viewercount }}</p>
+            </div>
+
+            <!-- Payment Form -->
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="{{ form.amount.id_for_label }}" class="form-label">Amount (₹)</label>
+                    {{ form.milestone_amount }}
+                  
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.remarks.id_for_label }}" class="form-label">Remarks (optional)</label>
+                    {{ form.remarks }}
+                    {% if form.remarks.errors %}
+                        <div class="text-danger small mt-1">{{ form.remarks.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="bi bi-currency-rupee me-1"></i>Confirm & Pay
+                    </button>
+                </div>
+            </form>
+
+            <div class="alert alert-info mt-4 mb-0">
+                <strong>Note:</strong> This is a simulated payment interface. For real payment integration, connect to Razorpay, Cashfree, or Stripe.
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const validators = [];
+
+  // Reusable validation function with min/max/regex
+  function handleValidation(input, options) {
+    const feedback = document.createElement('small');
+    feedback.style.display = 'block';
+    feedback.classList.add('form-text');
+    input.parentNode.appendChild(feedback);
+
+    function validate() {
+      const value = input.value.trim();
+      let isValid = true;
+
+      if (options.required && value === '') {
+        feedback.textContent = '❌ This field is required';
+        feedback.classList.add('text-danger');
+        feedback.classList.remove('text-success');
+        return false;
+      }
+
+      if (options.pattern && !options.pattern.test(value)) {
+        feedback.textContent = '❌ ' + options.invalidMsg;
+        feedback.classList.add('text-danger');
+        feedback.classList.remove('text-success');
+        return false;
+      }
+
+      if (options.min !== undefined && parseFloat(value) < options.min) {
+        feedback.textContent = '❌ ' + options.invalidMsg;
+        feedback.classList.add('text-danger');
+        feedback.classList.remove('text-success');
+        return false;
+      }
+
+      if (options.maxLength && value.length > options.maxLength) {
+        feedback.textContent = '❌ ' + options.invalidMsg;
+        feedback.classList.add('text-danger');
+        feedback.classList.remove('text-success');
+        return false;
+      }
+
+      if (options.validMsg) {
+        feedback.textContent = '✅ ' + options.validMsg;
+        feedback.classList.remove('text-danger');
+        feedback.classList.add('text-success');
+      } else {
+        feedback.textContent = '';
+      }
+
+      return true;
+    }
+
+    input.addEventListener('input', validate);
+    validators.push(validate);
+  }
+
+  // ✅ Amount (required, numeric, min 1)
+  const amountInput = document.querySelector('input[name="milestone_amount"]');
+  if (amountInput) {
+    handleValidation(amountInput, {
+      required: true,
+      pattern: /^\d+(\.\d{1,2})?$/, // numbers with up to 2 decimal places
+      min: 1,
+      validMsg: 'Valid amount',
+      invalidMsg: 'Enter a valid amount (min ₹1)'
+    });
+  }
+
+  // ✅ Remarks (optional, max 250 characters)
+  const remarksInput = document.querySelector('textarea[name="remarks"]');
+  if (remarksInput) {
+    handleValidation(remarksInput, {
+      required: false,
+      maxLength: 250,
+      validMsg: 'Looks good',
+      invalidMsg: 'Remarks should not exceed 250 characters'
+    });
+  }
+
+  // Final form submission validation
+  const form = document.querySelector('form');
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      let isValid = true;
+      validators.forEach(validateFn => {
+        if (!validateFn()) isValid = false;
+      });
+
+      if (!isValid) {
+        e.preventDefault();
+        alert('❌ Please correct the highlighted fields before submitting.');
+      }
+    });
+  }
+});
+</script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

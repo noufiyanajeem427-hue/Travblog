@@ -1,0 +1,53 @@
+{% extends "hfset.html" %}
+{% block content %}
+<div class="container py-5">
+    <h2 class="text-center mb-4 text-primary fw-bold">Create Travel Log</h2>
+
+   <form method="POST" enctype="multipart/form-data" class="card p-4 shadow-sm border-0">
+    {% csrf_token %}
+    <div class="mb-3">
+        {{ user.location.label_tag }} {{ user.location }}
+    </div>
+
+    <div id="map" style="height: 400px;" class="mb-3 rounded shadow-sm border"></div>
+
+    {{ user.latitude }} {{ user.longitude }}  <!-- hidden inputs with styling -->
+
+    <div class="mb-3">
+        {{ user.image.label_tag }} {{ user.image }}
+    </div>
+
+    <div class="mb-3">
+        {{ user.travellog.label_tag }} {{ user.travellog }}
+    </div>
+
+    <button type="submit" class="btn btn-success">Submit</button>
+</form>
+</div>
+
+<!-- Leaflet JS and CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+    const map = L.map('map').setView([20.5937, 78.9629], 5);  // Centered on India
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a>',
+    }).addTo(map);
+
+    let marker;
+
+    function setMarker(lat, lng) {
+        if (marker) map.removeLayer(marker);
+        marker = L.marker([lat, lng]).addTo(map);
+        document.getElementById("id_latitude").value = lat;
+        document.getElementById("id_longitude").value = lng;
+    }
+
+    map.on('click', function(e) {
+        const { lat, lng } = e.latlng;
+        setMarker(lat, lng);
+    });
+</script>
+{% endblock %}

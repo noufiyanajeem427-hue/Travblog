@@ -1,0 +1,60 @@
+{% extends "hfset.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Review Page</title>
+</head>
+<body>
+    <center>
+       <div class="container mt-4">
+    <h2>Reviews for {{ travelblog.location }}</h2>
+
+    <div class="mt-4">
+        {% for review in reviews %}
+            <div class="card mb-2">
+                <div class="card-body">
+                    {% if review.author.user1_as_name %}
+                        <p><strong>{{ review.author.user1_as_name.name }}</strong></p>
+                    {% elif review.author.user_as_name %}
+                        <p><strong>{{ review.author.user_as_name.name }}</strong></p>
+                    {% else %}
+                        <p><strong>Anonymous</strong></p>
+                    {% endif %}
+                    <p class="card-text">{{ review.review }}</p>
+                    <p class="card-text"><small class="text-muted">{{ review.curr_date }}</small></p>
+
+                    {% if review.author.id == logged_in_user_id %}
+                        <a href="{% url 'edit_review' review.id %}" class="btn btn-warning">Edit</a>
+                        <a href="{% url 'delete_review' review.id %}" class="btn btn-danger">Delete</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <p>No reviews yet for this travel blog.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="container mt-4">
+    <h2>Do you want to write a Review for {{ travelblog.location }}</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ review_form.as_p }}
+        <button type="submit" class="btn btn-primary">Add Review</button>
+    </form>
+</div>
+
+<div class="container mt-4">
+   
+        <a href="{% url 'travel_detail' travelblog.id %}" class="btn btn-secondary mt-3">Back to Travel blogs</a>
+</div>
+
+</center>
+    
+</body>
+</html> 
+{% endblock %}

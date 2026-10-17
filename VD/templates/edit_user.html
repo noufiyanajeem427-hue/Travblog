@@ -1,0 +1,106 @@
+{% extends "hfset.html" %}
+{% block content %}
+<div class="container py-5">
+    <h2 class="text-center mb-4 text-primary fw-bold">✏️ Edit Travel Log</h2>
+
+    <form method="POST" enctype="multipart/form-data" class="card p-4 shadow-sm border-0">
+        {% csrf_token %}
+
+        <!-- Location Field -->
+        <div class="mb-3">
+            {{ user.location.label_tag }}
+            {{ user.location }}
+        </div>
+
+        <!-- Map to update coordinates -->
+        <div id="map" style="height: 400px;" class="rounded shadow-sm border mb-3"></div>
+
+        <!-- Hidden Lat/Lng Fields -->
+        {{ user.latitude }}
+        {{ user.longitude }}
+
+        <!-- Image Upload -->
+        <div class="mb-3">
+            {{ user.image.label_tag }}
+            {{ user.image }}
+            {% if user.instance.image %}
+                <div class="mt-2">
+                    <strong>Current Image:</strong><br>
+                    <img src="{{ user.instance.image.url }}" alt="Current Image" class="img-thumbnail" width="200">
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Travel Log Description -->
+        <div class="mb-3">
+            {{ user.travellog.label_tag }}
+            {{ user.travellog }}
+        </div>
+
+        <button type="submit" class="btn btn-success">Update Travel Log</button>
+    </form>
+</div>
+
+<!-- Leaflet CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+    const map = L.map('map').setView(
+        [{{ user.instance.latitude|default:20.5937 }}, {{ user.instance.longitude|default:78.9629 }}], 5
+    );
+
+    // Satellite imagery base layer
+    const satellite = L.tileLayer(
+        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        {
+            attribution: 'Imagery © Esri, Maxar, Earthstar Geographics',
+            maxZoom: 19
+        }
+    );
+
+    // Labels overlay
+    const labels = L.tileLayer(
+        'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+        {
+            attribution: 'Labels © Esri',
+            maxZoom: 19
+        }
+    );
+
+    satellite.addTo(map);
+    labels.addTo(map);
+
+    // Custom marker
+    const customIcon = L.icon({
+        iconUrl: '/static/images/map-pin.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+    });
+
+    let marker = L.marker(
+        [{{ user.instance.latitude|default:20.5937 }}, {{ user.instance.longitude|default:78.9629 }}],
+        { icon: customIcon, draggable: true }
+    ).addTo(map)
+     .bindPopup("Drag to update location")
+     .openPopup();
+
+    // Sync to form fields
+    document.getElementById("id_latitude").value = marker.getLatLng().lat;
+    document.getElementById("id_longitude").value = marker.getLatLng().lng;
+
+    marker.on('dragend', function(e) {
+        const { lat, lng } = e.target.getLatLng();
+        document.getElementById("id_latitude").value = lat.toFixed(6);
+        document.getElementById("id_longitude").value = lng.toFixed(6);
+    });
+
+    map.on('click', function(e) {
+        const { lat, lng } = e.latlng;
+        marker.setLatLng([lat, lng]);
+        document.getElementById("id_latitude").value = lat.toFixed(6);
+        document.getElementById("id_longitude").value = lng.toFixed(6);
+    });
+</script>
+{% endblock %}

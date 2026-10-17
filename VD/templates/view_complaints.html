@@ -1,0 +1,60 @@
+{% extends "hfset2.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaint</title>
+    <style>
+        table {
+    border: 1px solid black;  /* Adds border around the table */
+}
+
+th, td {
+    border: 1px solid black;  /* Adds borders around individual cells */
+    padding: 8px;
+}
+</style>
+</head>
+<body>
+<center>
+   <section class="section">
+    <div class="card">
+        <div class="card-header">
+            My Complaints
+        </div>
+        <div class="card-body">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Message</th>
+                        <th>Submitted On</th>
+                        <th>Response</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for complaint in complaints %}
+                    <tr>
+                        <td>{{ complaint.subject }}</td>
+                        <td>{{ complaint.message }}</td>
+                        <td>{{ complaint.curr_date }}</td>
+                        <td>
+                            {% if complaint.response %}
+                                {{ complaint.response }}
+                            {% else %}
+                                <span style="color: red;">Response Pending</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </section>
+</center>
+</body>
+</html>
+{% endblock %}

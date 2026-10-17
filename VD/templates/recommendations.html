@@ -1,0 +1,15 @@
+<h2>🌍 Recommended Destinations Based on Reviews</h2>
+<ul>
+  {% for place in recommendations %}
+    <li>
+      <strong>{{ place.location }}</strong><br>
+      {% if place.travellog %}
+        {{ place.travellog|truncatechars:200 }}
+      {% elif place.article %}
+        {{ place.article|truncatechars:200 }}
+      {% endif %}
+    </li>
+  {% empty %}
+    <li>No recommendations found.</li>
+  {% endfor %}
+</ul>

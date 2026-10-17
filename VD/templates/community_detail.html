@@ -1,0 +1,19 @@
+{% extends "hfset.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Details</title>
+</head>
+<body>
+    <h2>{{ community.name }} <small>(Created by: {{ community.creator.name }})</small></h2>
+    <img src="{{ community.icon.url }}" alt="Community Icon" width="100">
+    <p><strong>Description:</strong> {{ community.description }}</p>
+    <p><strong>Created on:</strong> {{ community.created_at }}</p>
+
+</body>
+</html>
+{% endblock %}
+

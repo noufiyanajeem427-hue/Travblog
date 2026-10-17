@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Notification </title>
+    <style>
+        ul {
+            list-style-type: none;
+        }
+
+        li {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+
+        button {
+            background: green;
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>Your Notifications</h2>
+    {% if notifications %}
+        <ul>
+        {% for notification in notifications %}
+            <li>
+                <strong>{{ notification.message }}</strong>
+                <small>({{ notification.created_at }})</small>
+                <button onclick="markAsRead({{ notification.id }})">Mark as Read</button>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+    <p>No new notifications.</p>
+    {% endif %}
+<script>
+    function markAsRead(notificationId) {
+        fetch(`/mark_notification_as_read/${notificationId}/`)
+            .then(() => location.reload());
+        }
+</script>      
+</body>
+</html> 

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Travel Assistant</title>
+  <style>
+  :root {
+    --sand: #fff8e1;
+    --sky: #b3e5fc;
+    --sun: #ffcc80;
+    --sea: #81d4fa;
+    --wave: #4fc3f7;
+    --map-gray: #eeeeee;
+    --text-dark: #2e3a59;
+    --text-light: #ffffff;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--sand);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #chatContainer {
+    width: 95%;
+    max-width: 460px;
+    height: 90vh;
+    background: var(--sky);
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+
+  #chatOutput {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: var(--sand);
+  }
+
+  #chatOutput p {
+    margin: 0;
+    padding: 12px 16px;
+    border-radius: 18px;
+    max-width: 75%;
+    word-wrap: break-word;
+    font-size: 14px;
+    line-height: 1.5;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideIn 0.4s forwards;
+  }
+
+  .user-message {
+    align-self: flex-end;
+    background-color: var(--wave);
+    color: var(--text-light);
+    text-align: right;
+  }
+
+  .bot-message {
+    align-self: flex-start;
+    background-color: var(--map-gray);
+    color: var(--text-dark);
+    text-align: left;
+  }
+
+  .typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background-color: var(--sun);
+    border-radius: 18px;
+    max-width: fit-content;
+    font-size: 20px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.4s ease-in-out;
+  }
+
+  .typing-indicator span {
+    animation: pulse 1.4s infinite ease-in-out both;
+  }
+
+  .typing-indicator span:nth-child(1) { animation-delay: 0s; }
+  .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes slideIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.2); opacity: 1; }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  #inputContainer {
+    display: flex;
+    padding: 10px;
+    background: var(--sky);
+    border-top: 1px solid var(--map-gray);
+    gap: 10px;
+  }
+
+  #textInput {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--map-gray);
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+  }
+
+  #sendButton {
+    background: var(--wave);
+    color: var(--text-light);
+    border: none;
+    border-radius: 8px;
+    padding: 0 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+  }
+
+  #sendButton:hover {
+    background: #29b6f6;
+  }
+  </style>
+</head>
+<body>
+
+<div id="chatContainer">
+  <div id="chatOutput"></div>
+  <div id="inputContainer">
+    <input type="text" id="textInput" placeholder="Where do you want to go today? 🧳✈️" />
+    <button id="sendButton">Send</button>
+  </div>
+</div>
+
+<script>
+const chatOutput = document.getElementById('chatOutput');
+const textInput  = document.getElementById('textInput');
+const sendButton = document.getElementById('sendButton');
+
+let inactivityTimer = null;
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    document.cookie.split(';').forEach(cookie => {
+      cookie = cookie.trim();
+      if (cookie.startsWith(name + '=')) {
+        cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
+      }
+    });
+  }
+  return cookieValue;
+}
+
+sendButton.addEventListener('click', () => {
+  const userMessage = textInput.value.trim();
+  if (!userMessage) return;
+
+  appendMessage(userMessage, 'user-message');
+  scrollBottom();
+  resetInactivityTimer();
+
+  const typing = appendTyping();
+  scrollBottom();
+
+  const formData = new FormData();
+  formData.append('question', userMessage);
+  formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+
+  fetch('/chatbot', {
+    method: 'POST',
+    body: formData
+  })
+  .then(r => r.json())
+  .then(data => {
+    typing.remove();
+    if (data.error) {
+      appendMessage(`<span style="color:red;">${data.error}</span>`, 'bot-message');
+    } else {
+      showLineByLineStreaming(data.answer);
+    }
+    textInput.value = '';
+  })
+  .catch(err => {
+    typing.textContent = 'Something went wrong. Try again.';
+    console.error(err);
+  });
+});
+
+function appendMessage(message, className) {
+  const p = document.createElement('p');
+  p.className = className;
+  p.innerHTML = message;
+  chatOutput.appendChild(p);
+}
+
+function appendTyping() {
+  const typing = document.createElement('div');
+  typing.className = 'typing-indicator';
+  typing.innerHTML = `
+    <span>🌍</span><span>✈️</span><span>🧳</span>
+  `;
+  chatOutput.appendChild(typing);
+  return typing;
+}
+
+function showLineByLineStreaming(message) {
+  const p = document.createElement('p');
+  p.className = 'bot-message';
+  chatOutput.appendChild(p);
+
+  const lines = message.split('\n').filter(line => line.trim() !== '');
+  let currentLine = 0;
+
+  function showNextLine() {
+    if (currentLine < lines.length) {
+      p.innerHTML += lines[currentLine] + "<br>";
+      scrollBottom();
+      currentLine++;
+      setTimeout(showNextLine, 400);
+    }
+  }
+
+  showNextLine();
+}
+
+function scrollBottom() {
+  chatOutput.scrollTop = chatOutput.scrollHeight;
+}
+
+function resetInactivityTimer() {
+  if (inactivityTimer) clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(() => {
+    appendMessage("🌟 Need help planning your next adventure?", 'bot-message');
+    scrollBottom();
+  }, 60000);
+}
+
+window.onload = () => {
+  appendMessage("👋 Hello Explorer! Ask me anything about travel, places, or your wishlist!", 'bot-message');
+  scrollBottom();
+  resetInactivityTimer();
+};
+</script>
+
+</body>
+</html>

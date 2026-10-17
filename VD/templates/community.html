@@ -1,0 +1,103 @@
+{% extends "hfset.html" %}
+{% block content %}
+
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #f8f9fa;
+    }
+
+    main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 0;
+    }
+
+    .form-container {
+        background-color: white;
+        padding: 30px 40px;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        max-width: 500px;
+        width: 100%;
+    }
+
+    .form-container h2 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 25px;
+        font-weight: 600;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    label {
+        margin-bottom: 6px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    input[type="text"],
+    input[type="file"],
+    textarea {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        font-size: 15px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    input[type="submit"] {
+        background-color: #007bff;
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s ease;
+    }
+
+    input[type="submit"]:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<main>
+    <div class="form-container">
+        <h2>Create New Community</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="icon">Icon:</label>
+            <input type="file" id="icon" name="icon" accept="image/*" required>
+
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" placeholder="Write a short description..." required></textarea>
+
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+</main>
+
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "hfset.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Review Page</title>
+</head>
+<body>
+    <center>
+       <div class="container mt-4">
+    <h2>Reviews for {{ article.location }}</h2>
+
+    <div class="mt-4">
+        {% for reviews in reviews %}
+            <div class="card mb-2">
+                <div class="card-body">
+                    {% if reviews.author.user1_as_name %}
+                        <p><strong>{{ reviews.author.user1_as_name.name }}</strong></p>
+                    {% elif reviews.author.user_as_name %}
+                        <p><strong>{{ reviews.author.user_as_name.name }}</strong></p>
+                    {% else %}
+                        <p><strong>Anonymous</strong></p>
+                    {% endif %}
+                    <p class="card-text">{{ reviews.reviews }}</p>
+                    <p class="card-text"><small class="text-muted">{{ reviews.curr_date }}</small></p>
+
+                    {% if reviews.author.id == logged_in_user_id %}
+                        <a href="{% url 'edit_reviews' reviews.id %}" class="btn btn-warning">Edit</a>
+                        <a href="{% url 'delete_reviews' reviews.id %}" class="btn btn-danger">Delete</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <p>No reviews yet for this travel blog.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="container mt-4">
+    <h2>Do you want to write a Review for {{ article.location }}</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Add Review</button>
+    </form>
+</div>
+
+<div class="container mt-4">
+   
+        <a href="{% url 'article_details' article.id %}" class="btn btn-secondary mt-3">Back to Travel Articles</a>
+</div>
+
+</center>
+    
+</body>
+</html> 
+{% endblock %}

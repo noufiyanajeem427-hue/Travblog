@@ -1,0 +1,80 @@
+{% extends "hfset.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Article</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 50%;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .btn {
+            padding: 10px 15px;
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Edit Article</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ users1 }}
+            <!--<div class="form-group">
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location" value="{{ user.location }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="image">Upload Image:</label>
+                <input type="file" id="image" name="image">
+                <img src="media/{{ user.image}}" alt="User Image" width="100">
+            </div>
+
+            <div class="form-group">
+                <label for="travellog">Travel Log:</label>
+                <textarea id="travellog" name="travellog" required>{{ user.travellog }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="{{ user.loginid.email }}" required>
+            </div>-->
+
+            <button type="submit" class="btn">Update</button>
+        </form>
+    </div>
+
+</body>
+</html>
+{% endblock %}

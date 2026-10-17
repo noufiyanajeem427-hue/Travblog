@@ -1,0 +1,51 @@
+{% extends "hfset2.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Blogs</title>
+    <style>
+      
+        .scroll-container {
+            height: 90vh; /* Set scrollable container height */
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px; /* Add space between cards */
+            padding: 10px;
+        }
+        .card {
+            width: 80%; /* Card width */
+            margin: auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+        }
+        .card img {
+            width: 100%; /* Image fills the card */
+            height: 300px; /* Adjust height */
+            object-fit: cover; /* Ensure image fits nicely */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Travel Blogs</h1>
+        <div class="scroll-container">
+            {% for user in users %}
+            <div class="card">
+                <img src="{{ user.image.url }}" class="card-img-top" alt="{{ user.location }}">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ user.location }}</h3>
+                    <p class="card-text">{{ user.description|truncatechars:100 }}</p>
+                    <a href="{% url 'travel_detail1' user.id %}" class="btn btn-light">See More</a>
+                </div>
+            </div>
+            {% endfor %}
+            
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}

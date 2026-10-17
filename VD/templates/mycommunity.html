@@ -1,0 +1,68 @@
+
+{% extends "hfset.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        footer {
+            background-color: #021126;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-5 flex-grow-1 d-flex flex-column">
+    <h2 class="text-center mb-4">My Communities</h2>
+
+    <!-- Member Communities -->
+    <div>
+        <h4>Communities You’re a Member Of</h4>
+        {% if member_communities %}
+            <table class="table table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th>Community Name</th>
+                        <th>Icon</th>
+                        <th>Open</th>
+                        <th>Chat</th>
+                        <th>Create Event</th>
+                        <th>Participate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for community in member_communities %}
+                    <tr>
+                        <td>{{ community.name }}</td>
+                        <td><img src="{{ community.icon.url }}" alt="icon" width="50"></td>
+                        <td><a href="{% url 'community_detail' community.id %}" class="btn btn-primary">Open</a></td>
+                        <td><a href="{% url 'community_chat' community.id %}" class="btn btn-success">Chat</a></td>
+                        <td><a href="{% url 'create_event' community.id %}" class="btn btn-success">Add Event</a></td>
+                        <td><a href="{% url 'event_list' community.id %}" class="btn btn-success">See Events</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-muted">You are not a member of any communities.</p>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>
+{% endblock %}

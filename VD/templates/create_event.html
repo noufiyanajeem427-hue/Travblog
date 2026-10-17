@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create New Event | VoyageDiaries</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f8fb;
+      padding: 30px;
+      color: #333;
+    }
+    .form-container {
+      max-width: 700px;
+      margin: auto;
+      background: #ffffff;
+      padding: 30px 40px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #2c3e50;
+      text-align: center;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+    }
+    input[type="text"],
+    input[type="url"],
+    input[type="datetime-local"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    .submit-btn {
+      margin-top: 25px;
+      background-color: #3498db;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+    }
+    .submit-btn:hover {
+      background-color: #2c80b4;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Create a Community Event</h2>
+    <form method="POST" action="">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+
+      <label for="id_title">Title:</label>
+      {{ form.title }}
+
+      <label for="id_description">Description:</label>
+      {{ form.description }}
+
+      <label for="id_event_type">Event Type:</label>
+      {{ form.event_type }}
+
+      <label for="id_mode">Event Mode:</label>
+      {{ form.mode }}
+
+      <div id="location-container">
+        <label for="id_location">Location (if physical):</label>
+        {{ form.location }}
+      </div>
+
+      <label for="id_start_time">Start Time:</label>
+      {{ form.start_time }}
+
+      <label for="id_end_time">End Time:</label>
+      {{ form.end_time }}
+
+      <button type="submit" class="submit-btn">Publish Event</button>
+    </form>
+  </div>
+
+  <script>
+    const modeField = document.getElementById("id_mode");
+    const locationContainer = document.getElementById("location-container");
+
+    function toggleLocationVisibility() {
+      if (modeField.value === "online") {
+        locationContainer.style.display = "none";
+      } else {
+        locationContainer.style.display = "block";
+      }
+    }
+
+    if (modeField) {
+      modeField.addEventListener("change", toggleLocationVisibility);
+      window.addEventListener("load", toggleLocationVisibility);
+    }
+  </script>
+</body>
+</html>

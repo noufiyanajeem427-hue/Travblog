@@ -1,0 +1,221 @@
+{% extends "hfset.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add Members</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    main {
+      flex: 1;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    form {
+      width: 60%;
+      margin: 0 auto 40px;
+      padding: 20px;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      border: 1px solid #999;
+      border-radius: 4px;
+    }
+
+    small {
+      font-size: 12px;
+      display: block;
+    }
+
+    button {
+      background-color: #28a745;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 90%;
+      margin: 0 auto 40px;
+      border: 2px solid #000;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #000;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h2>Add Members to {{ community.name }}</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Gender</th>
+          <th>Age</th>
+          <th>Contacts</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>{{ user.name }}</td>
+          <td>{{ user.gender }}</td>
+          <td>{{ user.age }}</td>
+          <td>{{ user.contacts }}</td>
+          <td>
+            <a href="{% url 'add_member_to_community' community.id user.id %}" class="btn">Add</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5">No users available to add.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const validators = [];
+
+      function handleValidation(input, pattern, validMsg, invalidMsg) {
+        const feedback = document.createElement('small');
+        feedback.style.display = 'block';
+        input.parentNode.appendChild(feedback);
+
+        function validate() {
+          const value = input.value.trim();
+          if (!value) {
+            feedback.textContent = '❌ This field is required';
+            feedback.style.color = 'red';
+            return false;
+          } else if (!pattern.test(value)) {
+            feedback.textContent = '❌ ' + invalidMsg;
+            feedback.style.color = 'red';
+            return false;
+          } else {
+            feedback.textContent = '✅ ' + validMsg;
+            feedback.style.color = 'green';
+            return true;
+          }
+        }
+
+        input.addEventListener('input', validate);
+        validators.push(validate);
+      }
+
+      // Apply validation to individual fields
+      const nameInput = document.querySelector('input[name="name"]');
+      if (nameInput) {
+        handleValidation(nameInput, /^[A-Za-z ]+$/, 'Valid name', 'Name must contain only letters and spaces');
+      }
+
+      const contactInput = document.querySelector('input[name="contact"]');
+      if (contactInput) {
+        handleValidation(contactInput, /^\d{10}$/, 'Valid phone number', 'Enter a valid 10-digit phone number');
+      }
+
+      const emailInput = document.querySelector('input[name="email"]');
+      if (emailInput) {
+        handleValidation(emailInput, /^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Valid email address', 'Enter a valid email address');
+      }
+
+      const passwordInput = document.querySelector('input[name="password"]');
+      if (passwordInput) {
+        handleValidation(passwordInput, /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/, 'Strong password', 'Password must be at least 8 characters, include uppercase, lowercase, number, and special character');
+      }
+
+      const requiredFields = ['District', 'City', 'Village', 'Panchayat', 'Register_no'];
+      requiredFields.forEach(fieldName => {
+        const input = document.querySelector(`input[name="${fieldName}"]`);
+        if (input) {
+          const feedback = document.createElement('small');
+          input.parentNode.appendChild(feedback);
+
+          input.addEventListener('input', function () {
+            if (input.value.trim() === '') {
+              feedback.textContent = '❌ This field is required';
+              feedback.style.color = 'red';
+            } else {
+              feedback.textContent = '';
+            }
+          });
+        }
+      });
+
+      // Prevent form submission if validation fails
+      const form = document.querySelector('form');
+      if (form) {
+        form.addEventListener('submit', function (e) {
+          let isValid = true;
+          validators.forEach(validateFn => {
+            if (!validateFn()) isValid = false;
+          });
+          if (!isValid) {
+            e.preventDefault();
+            alert("❌ Please fill all required fields and fix validation errors.");
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
+{% endblock %}

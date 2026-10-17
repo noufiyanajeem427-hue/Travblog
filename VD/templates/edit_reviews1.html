@@ -1,0 +1,47 @@
+{% extends "hfset2.html" %}
+{% block content %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Review</title>
+    <style>
+        body { font-family: Arial, sans-serif;
+             background: #f9f9f9; }
+        .container { width: 50%; 
+             margin: auto;
+             padding: 20px; 
+             border-radius: 5px;
+              background: white; }
+        .form-group { margin-bottom: 15px; }
+        label { font-weight: bold; 
+            display: block; }
+        textarea { width: 100%;
+             padding: 8px; 
+             border: 1px solid #ccc; 
+             border-radius: 4px; 
+             resize: vertical; }
+        .btn { padding: 10px 15px; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Edit Your Review</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="review">Your Review:</label>
+            {{ form.reviews }}  <!-- Ensure this correctly references the comment field -->
+        </div>
+        <button type="submit" class="btn">Update review</button>
+    </form>
+</div>
+
+</body>
+</html>
+{% endblock %}

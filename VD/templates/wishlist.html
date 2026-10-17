@@ -1,0 +1,44 @@
+{% extends "hfset.html" %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center mb-4 text-primary fw-bold">
+                        🧳 Add to Wishlist
+                    </h2>
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    <div class="text-danger small">{{ field.errors|striptags }}</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="reminder_dates">Reminder Dates</label>
+                            <input type="text" class="form-control" id="reminder_dates" name="reminder_dates"
+                                placeholder="e.g. 12-08-2025, 15-08-2025">
+                            <div class="form-text text-muted">
+                                Enter multiple dates separated by commas (dd-mm-yyyy).
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-heart-fill me-2"></i>Submit Wishlist
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

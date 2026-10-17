@@ -1,0 +1,56 @@
+{% extends "hfset.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Requests</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+  <center>
+    <h1>View Requests for {{ community.name }}</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>Age</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in requests %}
+            <tr>
+                <td>{{ request.user.id }}</td>
+                <td>{{ request.user.name }}</td>
+                <td>{{ request.user.gender }}</td>
+                <td>{{ request.user.age }}</td>
+                <td>
+                {% if request.status == 1 %}
+                    <span style="color: green; font-weight: bold;">Accepted</span>
+                {% elif request.status == 2 %}
+                    <span style="color: red; font-weight: bold;">Rejected</span>
+                {% else %}
+                    <a href="{% url 'accept_request' request.id %}" class="btn btn-success">Accept</a>
+                    <a href="{% url 'reject_request' request.id %}" class="btn btn-danger">Reject</a>
+                {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</center>
+</body>
+</html>
+{% endblock %}
+

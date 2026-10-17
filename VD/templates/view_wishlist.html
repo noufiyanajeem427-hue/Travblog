@@ -1,0 +1,37 @@
+{% extends "hfset.html" %}
+{% block content %}
+<div class="container py-5">
+    <h2 class="text-center text-primary mb-4 fw-bold">
+        📝 Your Wishlist
+    </h2>
+
+    {% if wishlists %}
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            {% for wish in wishlists %}
+            <div class="col">
+                <div class="card shadow-sm h-100 border-start border-4 border-primary">
+                    <div class="card-body">
+                        <h5 class="card-title text-success fw-semibold">
+                            <i class="bi bi-geo-alt-fill me-2"></i>{{ wish.destination }}
+                        </h5>
+                        <p class="card-text mb-2">
+                            <strong>Planned Date:</strong> {{ wish.planned_date|date:"F j, Y" }}
+                        </p>
+                        <p class="card-text mb-2">
+                            <strong>Reminder Dates:</strong> {{ wish.reminder_dates|join:", " }}
+                        </p>
+                        <p class="card-text text-muted small">
+                            <strong>Created On:</strong> {{ wish.created_date|date:"F j, Y, g:i a" }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-warning text-center mt-4" role="alert">
+            <i class="bi bi-exclamation-circle-fill me-2"></i>No wishlist items found.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

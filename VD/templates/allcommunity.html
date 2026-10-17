@@ -1,0 +1,149 @@
+{% extends "hfset.html" %}
+{% block content %}
+
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background-color: #f5f7fa;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 40px 20px;
+    }
+
+    h2 {
+        margin-bottom: 30px;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    table {
+        width: 100%;
+        max-width: 1000px;
+        border-collapse: collapse;
+        background-color: #ffffff;
+        border: 2px solid #007bff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    th, td {
+        padding: 14px 16px;
+        text-align: center;
+        border: 1px solid #007bff;
+        font-size: 15px;
+    }
+
+    th {
+        background-color: #007bff;
+        color: white;
+        font-weight: 600;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    img {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+
+    .btn {
+        padding: 6px 14px;
+        font-size: 14px;
+        border: none;
+        border-radius: 4px;
+        text-decoration: none;
+        color: white;
+        display: inline-block;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+    }
+
+    .btn:hover {
+        opacity: 0.9;
+    }
+.footer .footer-item {
+    padding: 10px 0 !important;
+    margin: 0 auto !important;
+}
+
+.footer .footer-item h4,
+.footer .footer-item p {
+    margin: 4px 0 !important;
+    font-size: 14px !important;
+    line-height: 1.3;
+    text-align: center;
+}
+
+.footer .row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.footer {
+    padding: 10px 0 !important;
+}
+
+
+</style>
+
+<div class="container">
+    <h2>All Communities</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Icon</th>
+                <th>Description</th>
+                <th>Join Request</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for community in communities %}
+            <tr>
+                <td>{{ community.name }}</td>
+                <td><img src="{{ community.icon.url }}" alt="icon"></td>
+                <td>{{ community.description }}</td>
+                <td>
+                    {% if community.id in pending_requests %}
+                        <span style="color: gray;">Request Sent</span>
+                    {% elif community.id in rejected_requests %}
+                        <a href="{% url 'send_join_request' community.id %}" class="btn btn-primary">Send Again</a>
+                    {% else %}
+                        <a href="{% url 'send_join_request' community.id %}" class="btn btn-success">Send Request</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No communities available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
